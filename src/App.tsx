@@ -1,5 +1,6 @@
 import { authStore } from '@/store/auth.store'
 import { useEffect } from 'react'
+import { Toaster } from 'sonner'
 import './App.css'
 import { ThemeProvider } from './components/ui/theme-provider'
 import { AppRoutes } from './routes/AppRoutes'
@@ -14,6 +15,7 @@ function App() {
   return (
     <ThemeProvider>
       <AppRoutes />
+      <Toaster richColors closeButton expand={false} position='top-right' />
     </ThemeProvider>
   )
 }

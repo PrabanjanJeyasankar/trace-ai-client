@@ -5,8 +5,10 @@ import {
   PromptInputActions,
   PromptInputTextarea,
 } from '@/components/ui/prompt-input'
+import { MAX_SINGLE_MESSAGE_CHARS } from '@/config/llmLmits'
 import { ArrowUp, Square } from 'lucide-react'
 import { useState } from 'react'
+import { toast } from 'sonner'
 
 type ChatInputProps = {
   onSendMessage: (content: string) => void
@@ -22,24 +24,56 @@ export function ChatInput({
   disabled = false,
 }: ChatInputProps) {
   const [input, setInput] = useState('')
+  const [hasShownLimitToast, setHasShownLimitToast] = useState(false)
+
+  const getCharCount = (text: string) => [...text].length
+
+  const handleChange = (value: string) => {
+    const count = getCharCount(value)
+
+    if (count > MAX_SINGLE_MESSAGE_CHARS) {
+      if (!hasShownLimitToast) {
+        toast.error(`Maximum allowed is ${MAX_SINGLE_MESSAGE_CHARS} characters`)
+        setHasShownLimitToast(true)
+      }
+      return
+    }
+
+    if (count < MAX_SINGLE_MESSAGE_CHARS && hasShownLimitToast) {
+      setHasShownLimitToast(false)
+    }
+
+    setInput(value)
+  }
 
   const handleSubmit = () => {
     if (!input.trim() || isLoading || disabled) return
     onSendMessage(input.trim())
     setInput('')
+    setHasShownLimitToast(false)
   }
+
+  const charCount = getCharCount(input)
 
   return (
     <div className='bg-background'>
       <div className='mx-auto max-w-3xl pb-6'>
         <PromptInput
           value={input}
-          onValueChange={setInput}
+          onValueChange={handleChange}
           isLoading={isLoading}
           onSubmit={handleSubmit}
           disabled={disabled}
           className='w-full'>
-          <PromptInputTextarea placeholder='Message AI...' />
+          <PromptInputTextarea
+            placeholder='Message AI...'
+            value={input}
+            onChange={(e) => handleChange(e.target.value)}
+          />
+
+          <div className='text-xs text-muted-foreground text-right pr-1'>
+            {charCount}/{MAX_SINGLE_MESSAGE_CHARS}
+          </div>
 
           <PromptInputActions className='justify-end pt-2'>
             <PromptInputAction tooltip={isLoading ? 'Stop' : 'Send'}>
