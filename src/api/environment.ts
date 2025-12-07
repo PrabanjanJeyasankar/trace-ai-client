@@ -1,5 +1,6 @@
 export type EnvironmentConfig = {
   apiBaseUrl: string
+  isDev: boolean
 }
 
 function getRequiredEnvValue(
@@ -17,4 +18,5 @@ export const environment: EnvironmentConfig = {
     import.meta.env.VITE_API_BASE_URL,
     'VITE_API_BASE_URL'
   ),
+  isDev: import.meta.env.VITE_ENVIRONMENT === 'development',
 }
