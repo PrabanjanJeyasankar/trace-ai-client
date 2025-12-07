@@ -234,74 +234,77 @@ export const useChatStore = create<ChatState>((set, get) => ({
     set({ chats })
     get().setAssistantTyping(true)
 
-    let response
-
     try {
-      if (chat.isTemporary) {
-        response = await messageService.createMessage({ content })
+      let response
 
-        const realId = response.data.chatId || localId
-        const title = response.data.title || 'New Chat'
+      try {
+        if (chat.isTemporary) {
+          response = await messageService.createMessage({ content })
 
-        get().upgradeTempChat(localId, realId, title)
-        localId = realId
-      } else {
-        response = await messageService.createMessageInChat(localId, {
-          content,
+          const realId = response.data.chatId || localId
+          const title = response.data.title || 'New Chat'
+
+          get().upgradeTempChat(localId, realId, title)
+          localId = realId
+        } else {
+          response = await messageService.createMessageInChat(localId, {
+            content,
+          })
+        }
+
+        const realId = response.data.chatId ?? localId
+        const latest = get().chats
+        const updated = structuredClone(latest)
+
+        const updatedChat = updated[realId]
+
+        updatedChat.messages = [
+          ...updatedChat.messages.filter((m) => !m._id.startsWith('temp-')),
+          response.data.userMessage,
+          response.data.assistantMessage,
+        ]
+
+        storage.set('chats', updated)
+        set({ chats: updated })
+      } catch (error) {
+        const err: any = error
+
+        const backendError =
+          err?.response?.data?.message ||
+          err?.response?.data?.error ||
+          err?.message ||
+          'Unknown error occurred'
+
+        const latest = get().chats
+        const updated = structuredClone(latest)
+        const updatedChat = updated[localId]
+
+        updatedChat.messages.push({
+          _id: `error-${Date.now()}`,
+          chatId: localId,
+          userId: null,
+          role: 'assistant',
+          versions: [
+            {
+              content: `${backendError}`,
+              model: null,
+              createdAt: new Date().toISOString(),
+              isError: true,
+            },
+          ],
+          currentVersionIndex: 0,
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
         })
+
+        storage.set('chats', updated)
+        set({ chats: updated })
       }
 
-      const realId = response.data.chatId ?? localId
-      const latest = get().chats
-      const updated = structuredClone(latest)
-
-      const updatedChat = updated[realId]
-
-      updatedChat.messages = [
-        ...updatedChat.messages.filter((m) => !m._id.startsWith('temp-')),
-        response.data.userMessage,
-        response.data.assistantMessage,
-      ]
-
-      storage.set('chats', updated)
-      set({ chats: updated })
-    } catch (error) {
-      const err: any = error
-
-      const backendError =
-        err?.response?.data?.message ||
-        err?.response?.data?.error ||
-        err?.message ||
-        'Unknown error occurred'
-
-      const latest = get().chats
-      const updated = structuredClone(latest)
-      const updatedChat = updated[localId]
-
-      updatedChat.messages.push({
-        _id: `error-${Date.now()}`,
-        chatId: localId,
-        userId: null,
-        role: 'assistant',
-        versions: [
-          {
-            content: `${backendError}`,
-            model: null,
-            createdAt: new Date().toISOString(),
-            isError: true,
-          },
-        ],
-        currentVersionIndex: 0,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      })
-
-      storage.set('chats', updated)
-      set({ chats: updated })
+      get().loadAllChats()
+    } finally {
+      get().setAssistantTyping(false)
     }
-
-    get().setAssistantTyping(false)
-    get().loadAllChats()
   },
   async editMessage(messageId, content) {
     console.log('[chat.store] editMessage →', messageId)

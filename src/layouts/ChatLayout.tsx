@@ -1,5 +1,5 @@
-import CurrentChatTitle from '@/components/current-chat-title'
-import { AppSidebar } from '@/components/navigation/app-sidebar'
+import CurrentChatTitle from '@/components/CurrentChatTitle'
+import { AppSidebar } from '@/components/navigation/AppSidebar'
 import { Separator } from '@/components/ui/separator'
 import {
   SidebarInset,
@@ -14,7 +14,7 @@ export type ChatLayoutProps = {
 
 export function ChatLayout({ children }: ChatLayoutProps) {
   return (
-    <div className='h-screen w-screen overflow-hidden'>
+    <div className='h-dvh w-screen overflow-hidden fixed inset-0'>
       <SidebarProvider className='h-full overflow-hidden'>
         <AppSidebar />
 

@@ -40,7 +40,7 @@ const INITIAL_COMPONENTS: Partial<Components> = {
     const language = extractLanguage(className)
 
     return (
-      <CodeBlock className={className}>
+      <CodeBlock className={cn('my-6', className)}>
         <CodeBlockCode code={children as string} language={language} />
       </CodeBlock>
     )
@@ -80,7 +80,7 @@ function MarkdownComponent({
   ...props
 }: MarkdownProps) {
   return (
-    <div className={className} {...props}>
+    <div className={cn('overflow-x-auto max-w-full', className)} {...props}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm, remarkBreaks]}
         components={components}>

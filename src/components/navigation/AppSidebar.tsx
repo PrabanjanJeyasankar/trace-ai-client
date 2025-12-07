@@ -15,9 +15,9 @@ import {
 import { authStore } from '@/store/auth.store'
 import { useChatStore } from '@/store/chat.store'
 import { Logo } from '../Logo'
-import { NavUser } from '../nav-user'
-import { NavChatActions } from './nav-chat-action'
-import { NavChatHistory } from './nav-chat-history'
+import { NavChatActions } from './NavChatAction'
+import { NavChatHistory } from './NavChatHistory'
+import { NavUser } from './NavUser'
 
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'

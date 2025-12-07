@@ -78,9 +78,14 @@ axiosInstance.interceptors.response.use(
       isRefreshing = true
 
       try {
-        const { authService } = await import('@/services/auth.service')
-        const response = await authService.refreshToken()
-        const newAccessToken = response.data.accessToken
+        const refreshAxios = axios.create({
+          baseURL: environment.apiBaseUrl,
+          timeout: 10000,
+          withCredentials: true,
+        })
+
+        const response = await refreshAxios.post('/auth/refresh', {})
+        const newAccessToken = response.data.data.accessToken
 
         authStore.getState().setAuthToken(newAccessToken)
 
@@ -91,9 +96,10 @@ axiosInstance.interceptors.response.use(
 
         return axiosInstance(originalRequest)
       } catch (refreshError) {
+        console.error('Token refresh failed:', refreshError)
         processQueue(refreshError)
         isRefreshing = false
-        await authStore.getState().logoutUser()
+        await authStore.getState().logoutUser(true)
         return Promise.reject(refreshError)
       }
     }

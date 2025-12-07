@@ -47,9 +47,9 @@ export function ChatMessage({
     <div
       className={`flex w-full ${
         isUser ? 'justify-end' : 'justify-start'
-      } my-3 group`}>
+      }  group`}>
       <div
-        className={`flex flex-col max-w-[75%] ${
+        className={`relative flex flex-col max-w-[85%] md:max-w-[75%] ${
           isUser ? 'items-end' : 'items-start'
         }`}>
         {isError ? (
@@ -60,7 +60,7 @@ export function ChatMessage({
         ) : (
           <>
             <Message
-              className={`w-fit p-4
+              className={`w-fit p-4 break-words overflow-wrap-anywhere max-w-full
                 ${
                   isUser
                     ? 'bg-primary text-primary-foreground rounded-2xl rounded-br-none'
@@ -83,8 +83,8 @@ export function ChatMessage({
 
             {!isError && (
               <div
-                className={`flex gap-1 mt-1 ${
-                  isUser ? 'flex-row-reverse' : 'flex-row'
+                className={`absolute top-full flex gap-1 mt-1 ${
+                  isUser ? 'right-0 flex-row-reverse' : 'left-0 flex-row'
                 } ${
                   isEditing
                     ? 'opacity-100'

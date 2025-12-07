@@ -17,7 +17,7 @@ import {
 } from '@/components/ui/sidebar'
 import { authStore } from '@/store/auth.store'
 import { useChatStore } from '@/store/chat.store'
-import { useThemeStore } from './ui/theme-provider'
+import { useThemeStore } from '../ui/theme-provider'
 
 export function NavUser({
   user,

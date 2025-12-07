@@ -22,7 +22,9 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from '@/components/ui/sidebar'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { useChatStore } from '@/store/chat.store'
 import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react'
 import { useState } from 'react'
@@ -37,14 +39,25 @@ export function NavChatHistory() {
     deleteChat,
   } = useChatStore()
 
+  const { setOpenMobile } = useSidebar()
+  const isMobile = useIsMobile()
+
   const [renameId, setRenameId] = useState<string | null>(null)
   const [renameValue, setRenameValue] = useState('')
   const [deleteId, setDeleteId] = useState<string | null>(null)
 
   const openChat = async (id: string) => {
+    if (renameId === id) {
+      return
+    }
+
     window.history.replaceState(null, '', `/chat/${id}`)
     setCurrentChat(id)
     await loadChatFromBackend(id)
+
+    if (isMobile) {
+      setOpenMobile(false)
+    }
   }
 
   const startRename = (id: string, title: string) => {
@@ -122,7 +135,12 @@ export function NavChatHistory() {
 
                 <DropdownMenu>
                   {renameId !== id && (
-                    <DropdownMenuTrigger className='absolute right-2 top-1/2 -translate-y-1/2 opacity-0 group-hover/item:opacity-100 translate-x-1 group-hover/item:translate-x-0 transition-all duration-200 flex items-center justify-center p-1 rounded-md'>
+                    <DropdownMenuTrigger
+                      className={`absolute right-2 top-1/2 -translate-y-1/2 flex items-center justify-center p-1 rounded-md ${
+                        isMobile
+                          ? 'opacity-100'
+                          : 'opacity-0 group-hover/item:opacity-100 translate-x-1 group-hover/item:translate-x-0 transition-all duration-200'
+                      }`}>
                       <MoreHorizontal className='size-4' />
                     </DropdownMenuTrigger>
                   )}

@@ -4,6 +4,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from '@/components/ui/sidebar'
 
 import { Search, SquarePen } from 'lucide-react'
@@ -18,6 +19,7 @@ export function NavChatActions({
   onNewChat,
   onOpenSearch,
 }: NavChatActionsProps) {
+  const { setOpenMobile, isMobile } = useSidebar()
   const [keys, setKeys] = useState({
     search: '',
     newChat: '',
@@ -57,7 +59,12 @@ export function NavChatActions({
         <SidebarMenuItem>
           <SidebarMenuButton asChild>
             <button
-              onClick={onNewChat}
+              onClick={() => {
+                if (isMobile) {
+                  setOpenMobile(false)
+                }
+                onNewChat()
+              }}
               className='w-full flex items-center justify-between gap-2'>
               <div className='flex items-center gap-2'>
                 <SquarePen className='size-4' />
