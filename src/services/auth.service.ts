@@ -21,7 +21,6 @@ export type AuthSuccessResponse = {
       id: string
       email: string
     }
-    accessToken: string
   }
 }
 

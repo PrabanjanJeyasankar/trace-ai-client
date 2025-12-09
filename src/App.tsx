@@ -1,5 +1,5 @@
-import { authService } from '@/services/auth.service'
 import { authStore } from '@/store/auth.store'
+import { Loader } from 'lucide-react'
 import { useEffect } from 'react'
 import { Toaster } from 'sonner'
 import './App.css'
@@ -8,19 +8,21 @@ import { AppRoutes } from './routes/AppRoutes'
 
 function App() {
   const syncUser = authStore((state) => state.syncUser)
-  const setAuthToken = authStore((state) => state.setAuthToken)
+  const isLoading = authStore((state) => state.isLoading)
 
   useEffect(() => {
-    const initAuth = async () => {
-      try {
-        const response = await authService.refreshToken()
-        setAuthToken(response.data.accessToken)
-        await syncUser()
-      } catch {}
-    }
+    syncUser()
+  }, [syncUser])
 
-    initAuth()
-  }, [setAuthToken, syncUser])
+  if (isLoading) {
+    return (
+      <ThemeProvider>
+        <div className='flex h-screen w-full items-center justify-center'>
+          <Loader className='h-8 w-8 animate-spin text-primary' />
+        </div>
+      </ThemeProvider>
+    )
+  }
 
   return (
     <ThemeProvider>

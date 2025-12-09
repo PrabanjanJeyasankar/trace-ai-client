@@ -10,32 +10,25 @@ export type UserProfile = {
 }
 
 export type AuthState = {
-  authToken: string | null
   currentUser: UserProfile | null
-
   isAuthenticated: boolean
+  isLoading: boolean
 
-  setAuthToken: (token: string | null) => void
   setCurrentUser: (user: UserProfile | null) => void
   logoutUser: (force?: boolean) => Promise<void>
   syncUser: () => Promise<void>
 }
 
 export const authStore = create<AuthState>((set, get) => ({
-  authToken: null,
   currentUser: null,
   isAuthenticated: false,
-
-  setAuthToken: (token: string | null) => {
-    set({
-      authToken: token,
-      isAuthenticated: token !== null,
-    })
-  },
+  isLoading: true,
 
   setCurrentUser: (user: UserProfile | null) => {
     set({
       currentUser: user,
+      isAuthenticated: user !== null,
+      isLoading: false,
     })
   },
 
@@ -50,21 +43,23 @@ export const authStore = create<AuthState>((set, get) => ({
     }
 
     set({
-      authToken: null,
       currentUser: null,
       isAuthenticated: false,
+      isLoading: false,
     })
   },
 
   syncUser: async () => {
-    const token = get().authToken
-    if (!token) return
-
     try {
       const { authService } = await import('@/services/auth.service')
       const response = await authService.getMe()
-      set({ currentUser: response.data.user })
+      set({
+        currentUser: response.data.user,
+        isAuthenticated: true,
+        isLoading: false,
+      })
     } catch (error) {
+      set({ isLoading: false })
       await get().logoutUser()
     }
   },

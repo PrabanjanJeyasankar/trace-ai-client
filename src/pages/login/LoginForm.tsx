@@ -51,12 +51,10 @@ export default function LoginForm({
     setIsSubmitting(true)
 
     try {
-      const response = await authService.login({
+      await authService.login({
         email: emailValue,
         password: passwordValue,
       })
-
-      authStore.getState().setAuthToken(response.data.accessToken)
 
       const profile = await authService.getMe()
       authStore.getState().setCurrentUser(profile.data.user)

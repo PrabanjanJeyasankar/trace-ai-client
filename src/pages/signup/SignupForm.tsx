@@ -59,13 +59,12 @@ export default function SignupForm({
     setIsSubmitting(true)
 
     try {
-      const response = await authService.signup({
+      await authService.signup({
         email: emailValue,
         password: passwordValue,
         name: nameValue,
       })
 
-      authStore.getState().setAuthToken(response.data.accessToken)
       const profile = await authService.getMe()
       authStore.getState().setCurrentUser(profile.data.user)
 

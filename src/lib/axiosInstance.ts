@@ -1,10 +1,6 @@
 import { environment } from '@/api/environment'
 import { authStore } from '@/store/auth.store'
-import type {
-  AxiosInstance,
-  AxiosResponse,
-  InternalAxiosRequestConfig,
-} from 'axios'
+import type { AxiosInstance, AxiosResponse } from 'axios'
 import axios from 'axios'
 
 const axiosInstance: AxiosInstance = axios.create({
@@ -15,22 +11,6 @@ const axiosInstance: AxiosInstance = axios.create({
   },
   withCredentials: true,
 })
-
-axiosInstance.interceptors.request.use(
-  (config: InternalAxiosRequestConfig): InternalAxiosRequestConfig => {
-    const token = authStore.getState().authToken
-    config.headers = config.headers ?? {}
-
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`
-    }
-
-    return config
-  },
-  (error) => {
-    return Promise.reject(error)
-  }
-)
 
 let isRefreshing = false
 let failedQueue: Array<{
@@ -63,10 +43,6 @@ axiosInstance.interceptors.response.use(
           failedQueue.push({ resolve, reject })
         })
           .then(() => {
-            const token = authStore.getState().authToken
-            if (token) {
-              originalRequest.headers.Authorization = `Bearer ${token}`
-            }
             return axiosInstance(originalRequest)
           })
           .catch((error) => {
@@ -78,18 +54,7 @@ axiosInstance.interceptors.response.use(
       isRefreshing = true
 
       try {
-        const refreshAxios = axios.create({
-          baseURL: environment.apiBaseUrl,
-          timeout: 10000,
-          withCredentials: true,
-        })
-
-        const response = await refreshAxios.post('/auth/refresh', {})
-        const newAccessToken = response.data.data.accessToken
-
-        authStore.getState().setAuthToken(newAccessToken)
-
-        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`
+        await axiosInstance.post('/auth/refresh', {})
 
         processQueue()
         isRefreshing = false
