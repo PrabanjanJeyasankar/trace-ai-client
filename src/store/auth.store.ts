@@ -19,7 +19,7 @@ export type AuthState = {
   syncUser: () => Promise<void>
 }
 
-export const authStore = create<AuthState>((set, get) => ({
+export const authStore = create<AuthState>((set) => ({
   currentUser: null,
   isAuthenticated: false,
   isLoading: true,
@@ -59,8 +59,12 @@ export const authStore = create<AuthState>((set, get) => ({
         isLoading: false,
       })
     } catch (error) {
-      set({ isLoading: false })
-      await get().logoutUser()
+      console.error('Sync user error:', error)
+      set({
+        currentUser: null,
+        isAuthenticated: false,
+        isLoading: false,
+      })
     }
   },
 }))

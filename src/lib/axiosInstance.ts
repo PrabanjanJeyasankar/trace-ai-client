@@ -37,7 +37,21 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    const skipRefreshUrls = [
+      '/auth/refresh',
+      '/auth/me',
+      '/auth/login',
+      '/auth/signup',
+    ]
+    const shouldSkipRefresh = skipRefreshUrls.some((url) =>
+      originalRequest.url?.includes(url)
+    )
+
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      !shouldSkipRefresh
+    ) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject })
