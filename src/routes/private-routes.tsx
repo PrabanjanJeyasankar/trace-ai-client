@@ -1,7 +1,9 @@
+import { lazy } from 'react'
 import { type RouteObject } from 'react-router-dom'
 
-import ChatPage from '@/pages/chat/ChatPage'
 import { ProtectedRoute } from './ProtectedRoutes'
+
+const ChatPage = lazy(() => import('@/pages/chat/ChatPage'))
 
 export const privateRoutes: RouteObject[] = [
   {

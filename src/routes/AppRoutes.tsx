@@ -1,4 +1,6 @@
+import { Suspense } from 'react'
 import { BrowserRouter, Navigate, useRoutes } from 'react-router-dom'
+import { CircularLoader } from '@/components/ui/loader'
 import { privateRoutes } from './private-routes'
 import { publicRoutes } from './public-routes'
 
@@ -14,7 +16,14 @@ function AppRoutesInner() {
 export function AppRoutes() {
   return (
     <BrowserRouter>
-      <AppRoutesInner />
+      <Suspense
+        fallback={
+          <div className='flex min-h-screen items-center justify-center'>
+            <CircularLoader size='lg' />
+          </div>
+        }>
+        <AppRoutesInner />
+      </Suspense>
     </BrowserRouter>
   )
 }

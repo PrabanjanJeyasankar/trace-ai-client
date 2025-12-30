@@ -17,7 +17,6 @@ export function MessageActions({
   isEditing,
   copied,
   onCopy,
-  onStartEdit,
   onSave,
   onCancel,
 }: MessageActionsProps) {
@@ -76,16 +75,6 @@ export function MessageActions({
               )}
             </AnimatePresence>
           </button>
-
-          {/* {isUser && onStartEdit && (
-            <button
-              type='button'
-              onClick={onStartEdit}
-              className='grid size-8 place-items-center rounded-md text-muted-foreground transition-all duration-200 hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
-              title='Edit'>
-              <Edit3 className='h-4 w-4' />
-            </button>
-          )} */}
         </>
       )}
     </div>

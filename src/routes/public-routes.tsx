@@ -1,17 +1,16 @@
 // src/routes/public-routes.tsx
 
+import { lazy } from 'react'
 import { type RouteObject } from 'react-router-dom'
 import { PublicRoute } from './PublicRoute'
 
-import LoginPage from '@/pages/login/LoginPage'
-import SignupPage from '@/pages/signup/SignupPage'
+const LoginPage = lazy(() => import('@/pages/login/LoginPage'))
 
 export const publicRoutes: RouteObject[] = [
   {
     element: <PublicRoute />,
     children: [
       { path: '/login', element: <LoginPage /> },
-      { path: '/signup', element: <SignupPage /> },
     ],
   },
 ]

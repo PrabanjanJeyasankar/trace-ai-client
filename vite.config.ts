@@ -11,4 +11,22 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  build: {
+    target: 'es2018',
+    sourcemap: false,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return
+          if (id.includes('react-router')) return 'router'
+          if (id.includes('react-dom') || id.includes('react')) return 'react'
+          if (id.includes('socket.io-client')) return 'socket'
+          if (id.includes('framer-motion')) return 'motion'
+          if (id.includes('@radix-ui')) return 'radix'
+          if (id.includes('react-markdown') || id.includes('shiki')) return 'markdown'
+          return 'vendor'
+        },
+      },
+    },
+  },
 })

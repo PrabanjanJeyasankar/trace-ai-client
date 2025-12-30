@@ -7,11 +7,7 @@ export default function LoginPage() {
   return (
     <AuthLayout
       title='Welcome back'
-      description={
-        <>
-          Don't have an account? <a href='/signup'>Create one</a>
-        </>
-      }>
+      description='Sign in to continue.'>
       <LoginForm />
     </AuthLayout>
   )
